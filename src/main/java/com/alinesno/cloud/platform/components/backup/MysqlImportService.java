@@ -1,8 +1,9 @@
-package com.smattme;
+package com.alinesno.cloud.platform.components.backup;
 
-import com.smattme.exceptions.MysqlBackup4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
 
 import java.sql.Connection;
 import java.sql.SQLException;

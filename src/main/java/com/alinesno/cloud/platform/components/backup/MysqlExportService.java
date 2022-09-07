@@ -1,9 +1,10 @@
-package com.smattme;
+package com.alinesno.cloud.platform.components.backup;
 
-import com.smattme.exceptions.MysqlBackup4JException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.zip.ZipUtil;
+
+import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -453,13 +454,56 @@ public class MysqlExportService {
                 logger.error(LOG_PREFIX + ": Unable to send zipped file as attachment to email. See log debug for more info");
             }
         }
+       
+        // 上传到云存储
+        if(isStoragePropertiesSet()) {
+            boolean sendToStrorage = EmailService.builder()
+                    .setHost(properties.getProperty(EMAIL_HOST))
+                    .setPort(Integer.parseInt(properties.getProperty(EMAIL_PORT)))
+                    .setToAddress(properties.getProperty(EMAIL_TO))
+                    .setFromAddress(properties.getProperty(EMAIL_FROM))
+                    .setUsername(properties.getProperty(EMAIL_USERNAME))
+                    .setPassword(properties.getProperty(EMAIL_PASSWORD))
+                    .setSubject(properties.getProperty(EMAIL_SUBJECT, sqlFileName.replace(".sql", "").toUpperCase()))
+                    .setMessage(properties.getProperty(EMAIL_MESSAGE, "Please find attached database backup of " + database))
+                    .setAttachments(new File[]{new File(zipFileName)})
+                    .sendMail();
+
+            if (sendToStrorage) {
+                logger.debug(LOG_PREFIX + ": Zip File Sent as Attachment to Email Address Successfully");
+            } else {
+                logger.error(LOG_PREFIX + ": Unable to send zipped file as attachment to email. See log debug for more info");
+            }
+        }
 
         //clear the generated temp files
-        clearTempFiles();
+        if(isClearTemp()) {
+        	clearTempFiles();
+        }
 
     }
 
     /**
+     * 判断是否清理本地存储
+     * @return
+     */
+    private boolean isClearTemp() {
+    	
+		return false;
+	}
+
+	/**
+     * 上传到云存储 
+     * @return
+     */
+    private boolean isStoragePropertiesSet() {
+    
+    	// 查看云存儲配置是否存在
+    	
+		return false;
+	}
+
+	/**
      * This function will delete all the
      * temp files generated ny the library
      * unless it's otherwise instructed not to do

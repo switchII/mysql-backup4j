@@ -1,4 +1,4 @@
-package com.smattme;
+package com.alinesno.cloud.platform.components.backup;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -6,6 +6,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.alinesno.cloud.platform.components.backup.MysqlBaseService;
+import com.alinesno.cloud.platform.components.backup.MysqlExportService;
+import com.alinesno.cloud.platform.components.backup.MysqlImportService;
 
 import java.io.File;
 import java.nio.file.Files;
