@@ -1,20 +1,26 @@
 package com.alinesno.cloud.platform.components.backup;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.zeroturnaround.zip.ZipUtil;
-
-import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.zeroturnaround.zip.ZipUtil;
+
+import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
+import com.alinesno.cloud.platform.components.backup.storage.QiniuStorageService;
 
 /**
  * Created by seun_ on 24-Feb-18.
@@ -33,6 +39,7 @@ public class MysqlExportService {
     private Properties properties;
     private File generatedZipFile;
 
+    // 邮件配置
     public static final String EMAIL_HOST = "EMAIL_HOST";
     public static final String EMAIL_PORT = "EMAIL_PORT";
     public static final String EMAIL_USERNAME = "EMAIL_USERNAME";
@@ -41,6 +48,7 @@ public class MysqlExportService {
     public static final String EMAIL_MESSAGE = "EMAIL_MESSAGE";
     public static final String EMAIL_FROM = "EMAIL_FROM";
     public static final String EMAIL_TO = "EMAIL_TO";
+    
     public static final String DB_NAME = "DB_NAME";
     public static final String DB_USERNAME = "DB_USERNAME";
     public static final String DB_PASSWORD = "DB_PASSWORD";
@@ -48,7 +56,15 @@ public class MysqlExportService {
     public static final String PRESERVE_GENERATED_SQL_FILE = "PRESERVE_GENERATED_SQL_FILE";
     public static final String TEMP_DIR = "TEMP_DIR";
     public static final String ADD_IF_NOT_EXISTS = "ADD_IF_NOT_EXISTS";
-
+   
+    // 云存储配置
+    public static final String QINIU_ACCESS_KEY = "QINIU_ACCESS_KEY" ; 
+    public static final String QINIU_SECRET_KEY = "QINIU_SECRET_KEY" ; 
+    public static final String QINIU_BUCKET = "QINIU_BUCKET" ; 
+    public static final String QINIU_ZONE = "QINIU_ZONE" ; 
+   
+    // 是否清理配置设置
+    public static final String CLEAR_TEMP = "CLEAR_TEMP" ; 
 
     /**
      * @deprecated
@@ -457,17 +473,13 @@ public class MysqlExportService {
        
         // 上传到云存储
         if(isStoragePropertiesSet()) {
-            boolean sendToStrorage = EmailService.builder()
-                    .setHost(properties.getProperty(EMAIL_HOST))
-                    .setPort(Integer.parseInt(properties.getProperty(EMAIL_PORT)))
-                    .setToAddress(properties.getProperty(EMAIL_TO))
-                    .setFromAddress(properties.getProperty(EMAIL_FROM))
-                    .setUsername(properties.getProperty(EMAIL_USERNAME))
-                    .setPassword(properties.getProperty(EMAIL_PASSWORD))
-                    .setSubject(properties.getProperty(EMAIL_SUBJECT, sqlFileName.replace(".sql", "").toUpperCase()))
-                    .setMessage(properties.getProperty(EMAIL_MESSAGE, "Please find attached database backup of " + database))
-                    .setAttachments(new File[]{new File(zipFileName)})
-                    .sendMail();
+            boolean sendToStrorage = QiniuStorageService.builder()
+            		.setAccessKey(properties.getProperty(QINIU_ACCESS_KEY))
+            		.setSecretKey(properties.getProperty(QINIU_SECRET_KEY))
+            		.setBucket(properties.getProperty(QINIU_BUCKET))
+            		.setZone(properties.getProperty(QINIU_ZONE))
+            		.setAttachments(new File(zipFileName))
+                    .sendFile();
 
             if (sendToStrorage) {
                 logger.debug(LOG_PREFIX + ": Zip File Sent as Attachment to Email Address Successfully");
@@ -489,7 +501,9 @@ public class MysqlExportService {
      */
     private boolean isClearTemp() {
     	
-		return false;
+    	// 查看云存儲配置是否存在
+        return properties != null &&
+                properties.containsKey(CLEAR_TEMP) ; 
 	}
 
 	/**
@@ -499,8 +513,12 @@ public class MysqlExportService {
     private boolean isStoragePropertiesSet() {
     
     	// 查看云存儲配置是否存在
+        return properties != null &&
+                properties.containsKey(QINIU_ACCESS_KEY) &&
+                properties.containsKey(QINIU_SECRET_KEY) &&
+                properties.containsKey(QINIU_BUCKET) &&
+                properties.containsKey(QINIU_ZONE) ; 
     	
-		return false;
 	}
 
 	/**
