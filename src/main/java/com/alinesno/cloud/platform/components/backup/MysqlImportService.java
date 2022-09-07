@@ -1,16 +1,16 @@
 package com.alinesno.cloud.platform.components.backup;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alinesno.cloud.platform.components.backup.exceptions.MysqlBackup4JException;
 
 /**
  * Created by seun_ on 01-Mar-18.

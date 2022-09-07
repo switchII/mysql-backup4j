@@ -3,8 +3,6 @@ package com.alinesno.cloud.platform.components.backup;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.alinesno.cloud.platform.components.backup.MysqlBaseService;
-
 public class MysqlBackup4JUnitTest {
 
 
