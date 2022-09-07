@@ -27,6 +27,11 @@ The artifact is available on Maven Central and can be added to the project's pom
 
 The latest version can be found [here](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.smattme%22%20a%3A%22mysql-backup4j%22)
 
+## Upload 
+```sh
+mvn deploy '-Drepo.user=xxx''-Drepo.pwd=xxx' -s  ~/.m2/settings.xml
+```
+
 Usage
 =====
 The minimum configuration required for the library is the database name, username and password.

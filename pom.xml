@@ -10,33 +10,13 @@
 	<packaging>jar</packaging>
 
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>
-        This is a simple library for backing up mysql databases and sending to emails, cloud storage and so on.
-        It also provide a method for programmatically, importing SQL queries generated during the export process,
-    </description>
-	<url>https://github.com/SeunMatt/mysql-backup4j</url>
-
-	<licenses>
-		<license>
-			<name>MIT License</name>
-			<url>http://www.opensource.org/licenses/mit-license.php</url>
-		</license>
-	</licenses>
-
-	<developers>
-		<developer>
-			<name>Seun Matt</name>
-			<email>smatt382@gmail.com</email>
-			<organization>SmattMe</organization>
-			<organizationUrl>https://smattme.com</organizationUrl>
-		</developer>
-	</developers>
-
-	<scm>
-		<connection>scm:git:git://github.com/SeunMatt/mysql-backup4j.git</connection>
-		<developerConnection>scm:git:ssh://github.com:SeunMatt/mysql-backup4j.git</developerConnection>
-		<url>https://github.com/SeunMatt/mysql-backup4j/tree/master</url>
-	</scm>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.source.version>11</java.source.version>
+        <java.target.version>11</java.target.version>	
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -86,16 +66,22 @@
 		</dependency>
 	</dependencies>
 
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
+    <!-- 私服发布需在setting.xml中配置鉴权账号 -->
+    <distributionManagement>
+
+        <repository>
+            <id>releases</id>
+            <name>Nexus Release Repository</name>
+            <url>http://nexus.lbxinhu.linesno.com/nexus/content/repositories/releases/</url>
+        </repository>
+
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>http://nexus.lbxinhu.linesno.com/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+
+    </distributionManagement>
 
 	<build>
 		<plugins>
@@ -104,8 +90,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+                    <source>${java.source.version}</source>
+                    <target>${java.source.version}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
 				</configuration>
 			</plugin>
 			<plugin>
